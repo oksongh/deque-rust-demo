@@ -87,35 +87,8 @@ where
         }
         write!(f, ")")?;
 
-        // writeln!(f, "")?;
-        // current = self.tail.clone();
-        // write!(f, "(")?;
-        // while let Some(node) = current {
-        //     let n = node.borrow();
-        //     write!(f, "{}", n.data)?;
-        //     write!(f, "@{:p}", Rc::as_ptr(&node))?;
-        //     current = n.prev.clone();
-        //     if current.is_some() {
-        //         write!(f, "<--->")?;
-        //     }
-        // }
-        // write!(f, ")")?;
         Ok(())
     }
-    // fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-    //     // let mut current = &self.tail;
-    //     // write!(f, "(")?;
-    //     // while let Some(ref node) = current {
-    //     //     // let n = node;
-    //     //     write!(f, "{}", node.data)?;
-    //     //     current = &node.prev;
-    //     //     if current.is_some() {
-    //     //         write!(f, "<--->")?;
-    //     //     }
-    //     // }
-    //     // write!(f, ")")?;
-    //     Ok(())
-    // }
 }
 #[cfg(test)]
 mod tests {
