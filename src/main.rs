@@ -28,26 +28,23 @@ impl<T: Clone> DoublyLinkedList<T> {
         unimplemented!()
     }
     fn push_back(&mut self, elm: T) {
-        let next_node = Rc::new(RefCell::new(Node {
+        let new_tail = Rc::new(RefCell::new(Node {
             data: elm,
             next: None,
             prev: None,
         }));
 
         match self.tail.take() {
-            Some(tail) => {
-                tail.borrow_mut().next = Some(Rc::clone(&next_node));
-                next_node.borrow_mut().prev = Some(tail);
-
-                // self.tail = Some(Rc::clone(&next_node));
+            Some(old_tail) => {
+                old_tail.borrow_mut().next = Some(Rc::clone(&new_tail));
+                new_tail.borrow_mut().prev = Some(old_tail);
             }
             None => {
                 // first node
-                self.head = Some(Rc::clone(&next_node));
-                self.tail = Some(Rc::clone(&next_node));
+                self.head = Some(Rc::clone(&new_tail));
             }
         }
-        self.tail = Some(Rc::clone(&next_node));
+        self.tail = Some(Rc::clone(&new_tail));
     }
     fn push_front(&mut self, elm: T) {
         let new_node = Rc::new(RefCell::new(Node {
