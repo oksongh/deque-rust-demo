@@ -5,16 +5,16 @@ use std::{
 };
 
 #[derive(Clone, Debug)]
-struct Node<T: Clone + Debug> {
+struct Node<T: Clone> {
     data: T,
     next: Option<Rc<RefCell<Node<T>>>>,
     prev: Option<Rc<RefCell<Node<T>>>>,
 }
-struct DoublyLinkedList<T: Clone + Debug> {
+struct DoublyLinkedList<T: Clone> {
     head: Option<Rc<RefCell<Node<T>>>>,
     tail: Option<Rc<RefCell<Node<T>>>>,
 }
-impl<T: Clone + Debug> DoublyLinkedList<T> {
+impl<T: Clone> DoublyLinkedList<T> {
     fn new() -> Self {
         Self {
             head: None,
@@ -50,7 +50,23 @@ impl<T: Clone + Debug> DoublyLinkedList<T> {
         self.tail = Some(Rc::clone(&next_node));
     }
     fn push_front(&mut self, elm: T) {
-        unimplemented!()
+        let new_node = Rc::new(RefCell::new(Node {
+            data: elm,
+            next: None,
+            prev: None,
+        }));
+
+        match self.head.take() {
+            Some(old_head) => {
+                old_head.borrow_mut().prev = Some(Rc::clone(&new_node));
+                new_node.borrow_mut().next = Some(old_head);
+            }
+            None => {
+                // first node
+                self.tail = Some(Rc::clone(&new_node));
+            }
+        }
+        self.head = Some(Rc::clone(&new_node));
     }
 }
 impl<T> fmt::Display for DoublyLinkedList<T>
@@ -131,7 +147,18 @@ mod tests {
         list.push_front(3);
         assert_eq!(list.to_string(), "(3<--->2<--->1)")
     }
+    #[test]
+    fn push_back_front() {
+        let mut list = DoublyLinkedList::new();
+        list.push_back(1);
+        list.push_back(2);
+        list.push_back(3);
+        list.push_front(4);
+        list.push_front(5);
+        assert_eq!(list.to_string(), "(5<--->4<--->1<--->2<--->3)");
+    }
 }
+
 fn main() {
     let mut list = DoublyLinkedList::new();
     list.push_back(1);
