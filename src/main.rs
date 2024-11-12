@@ -66,6 +66,24 @@ impl<T: Clone> DoublyLinkedList<T> {
         self.head = Some(Rc::clone(&new_node));
     }
 }
+impl<T: Clone + Debug> From<&[T]> for DoublyLinkedList<T> {
+    fn from(elms: &[T]) -> DoublyLinkedList<T> {
+        let mut list = DoublyLinkedList::new();
+        elms.iter().for_each(|e| {
+            list.push_back(e.clone());
+        });
+        list
+    }
+}
+impl<T: Clone + Debug, const N: usize> From<&[T; N]> for DoublyLinkedList<T> {
+    fn from(elms: &[T; N]) -> DoublyLinkedList<T> {
+        let mut list = DoublyLinkedList::new();
+        elms.iter().for_each(|e| {
+            list.push_back(e.clone());
+        });
+        list
+    }
+}
 impl<T> fmt::Display for DoublyLinkedList<T>
 where
     T: Clone + fmt::Display + Debug,
@@ -126,6 +144,17 @@ mod tests {
         list.push_front(4);
         list.push_front(5);
         assert_eq!(list.to_string(), "(5<--->4<--->1<--->2<--->3)");
+    }
+    #[test]
+    fn from() {
+        let list = DoublyLinkedList::from(&[1, 2, 3, 4, 5][..]);
+        assert_eq!(list.to_string(), "(1<--->2<--->3<--->4<--->5)");
+    }
+
+    #[test]
+    fn from_const_size() {
+        let list = DoublyLinkedList::from(&[1, 2, 3, 4, 5]);
+        assert_eq!(list.to_string(), "(1<--->2<--->3<--->4<--->5)");
     }
 }
 
