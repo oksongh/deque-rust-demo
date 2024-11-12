@@ -21,8 +21,23 @@ impl<T: Clone> DoublyLinkedList<T> {
             tail: None,
         }
     }
-    fn pop_back(&mut self) -> T {
-        unimplemented!()
+    fn pop_back(&mut self) -> Option<T> {
+        self.tail.take().map(|old_tail| {
+            // oldtailにprevがない<=>要素1つだけのリスト
+            let new_tail = old_tail.borrow().prev.clone();
+            match new_tail {
+                //  old_tailへの参照をローカル変数old_tailだけにする
+                Some(new_tail) => {
+                    new_tail.borrow_mut().next = None;
+                    self.tail = Some(new_tail);
+                }
+                None => {
+                    self.head = None;
+                    // self.tail = None; already None by take()
+                }
+            }
+            Rc::into_inner(old_tail).unwrap().into_inner().data
+        })
     }
     fn pop_front(&mut self) -> T {
         unimplemented!()
@@ -156,6 +171,18 @@ mod tests {
         let list = DoublyLinkedList::from(&[1, 2, 3, 4, 5]);
         assert_eq!(list.to_string(), "(1<--->2<--->3<--->4<--->5)");
     }
+
+    #[test]
+    fn pop_back() {
+        let array = &[1, 2, 3, 4, 5];
+        let mut list: DoublyLinkedList<i32> = array.into();
+        for &e in array.iter().rev() {
+            assert_eq!(e, list.pop_back().unwrap());
+        }
+        assert_eq!(list.pop_back(), None);
+    }
+
+  
 }
 
 fn main() {
