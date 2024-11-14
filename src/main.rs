@@ -39,8 +39,18 @@ impl<T: Clone> DoublyLinkedList<T> {
             Rc::into_inner(old_tail).unwrap().into_inner().data
         })
     }
-    fn pop_front(&mut self) -> T {
-        unimplemented!()
+    fn pop_front(&mut self) -> Option<T> {
+        self.head.take().map(|old_head| {
+            let new_head = old_head.borrow().next.clone();
+            match new_head {
+                Some(new_head) => {
+                    new_head.borrow_mut().prev = None;
+                    self.head = Some(new_head);
+                }
+                None => self.tail = None,
+            };
+            Rc::into_inner(old_head).unwrap().into_inner().data
+        })
     }
     fn push_back(&mut self, elm: T) {
         let new_tail = Rc::new(RefCell::new(Node {
@@ -160,6 +170,7 @@ mod tests {
         list.push_front(5);
         assert_eq!(list.to_string(), "(5<--->4<--->1<--->2<--->3)");
     }
+
     #[test]
     fn from() {
         let list = DoublyLinkedList::from(&[1, 2, 3, 4, 5][..]);
@@ -182,7 +193,15 @@ mod tests {
         assert_eq!(list.pop_back(), None);
     }
 
-  
+    #[test]
+    fn pop_front() {
+        let array = &[1, 2, 3, 4, 5];
+        let mut list: DoublyLinkedList<i32> = array.into();
+        for &e in array {
+            assert_eq!(e, list.pop_front().unwrap());
+        }
+        assert_eq!(list.pop_front(), None);
+    }
 }
 
 fn main() {
