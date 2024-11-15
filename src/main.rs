@@ -91,6 +91,12 @@ impl<T> DoublyLinkedList<T> {
         self.head = Some(Rc::clone(&new_node));
     }
 }
+
+impl<T> Default for DoublyLinkedList<T> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
 impl<T: Clone> From<&[T]> for DoublyLinkedList<T> {
     fn from(elms: &[T]) -> DoublyLinkedList<T> {
         let mut list = DoublyLinkedList::new();
