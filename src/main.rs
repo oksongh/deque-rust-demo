@@ -14,14 +14,14 @@ struct DoublyLinkedList<T: Clone> {
     head: Option<Rc<RefCell<Node<T>>>>,
     tail: Option<Rc<RefCell<Node<T>>>>,
 }
-impl<T: Clone> DoublyLinkedList<T> {
-    fn new() -> Self {
+impl<T> DoublyLinkedList<T> {
+    pub fn new() -> Self {
         Self {
             head: None,
             tail: None,
         }
     }
-    fn pop_back(&mut self) -> Option<T> {
+    pub fn pop_back(&mut self) -> Option<T> {
         self.tail.take().map(|old_tail| {
             // oldtailにprevがない<=>要素1つだけのリスト
             let new_tail = old_tail.borrow().prev.clone();
@@ -39,7 +39,7 @@ impl<T: Clone> DoublyLinkedList<T> {
             Rc::into_inner(old_tail).unwrap().into_inner().data
         })
     }
-    fn pop_front(&mut self) -> Option<T> {
+    pub fn pop_front(&mut self) -> Option<T> {
         self.head.take().map(|old_head| {
             let new_head = old_head.borrow().next.clone();
             match new_head {
@@ -52,7 +52,7 @@ impl<T: Clone> DoublyLinkedList<T> {
             Rc::into_inner(old_head).unwrap().into_inner().data
         })
     }
-    fn push_back(&mut self, elm: T) {
+    pub fn push_back(&mut self, elm: T) {
         let new_tail = Rc::new(RefCell::new(Node {
             data: elm,
             next: None,
@@ -71,7 +71,7 @@ impl<T: Clone> DoublyLinkedList<T> {
         }
         self.tail = Some(Rc::clone(&new_tail));
     }
-    fn push_front(&mut self, elm: T) {
+    pub fn push_front(&mut self, elm: T) {
         let new_node = Rc::new(RefCell::new(Node {
             data: elm,
             next: None,
