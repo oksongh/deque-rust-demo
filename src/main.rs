@@ -4,7 +4,7 @@ use std::{
     rc::Rc,
 };
 
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 struct Node<T> {
     data: T,
     next: Option<Rc<RefCell<Node<T>>>>,
