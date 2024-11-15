@@ -5,12 +5,12 @@ use std::{
 };
 
 #[derive(Clone, Debug)]
-struct Node<T: Clone> {
+struct Node<T> {
     data: T,
     next: Option<Rc<RefCell<Node<T>>>>,
     prev: Option<Rc<RefCell<Node<T>>>>,
 }
-struct DoublyLinkedList<T: Clone> {
+pub struct DoublyLinkedList<T> {
     head: Option<Rc<RefCell<Node<T>>>>,
     tail: Option<Rc<RefCell<Node<T>>>>,
 }
@@ -91,7 +91,7 @@ impl<T> DoublyLinkedList<T> {
         self.head = Some(Rc::clone(&new_node));
     }
 }
-impl<T: Clone + Debug> From<&[T]> for DoublyLinkedList<T> {
+impl<T: Clone> From<&[T]> for DoublyLinkedList<T> {
     fn from(elms: &[T]) -> DoublyLinkedList<T> {
         let mut list = DoublyLinkedList::new();
         elms.iter().for_each(|e| {
@@ -100,7 +100,7 @@ impl<T: Clone + Debug> From<&[T]> for DoublyLinkedList<T> {
         list
     }
 }
-impl<T: Clone + Debug, const N: usize> From<&[T; N]> for DoublyLinkedList<T> {
+impl<T: Clone, const N: usize> From<&[T; N]> for DoublyLinkedList<T> {
     fn from(elms: &[T; N]) -> DoublyLinkedList<T> {
         let mut list = DoublyLinkedList::new();
         elms.iter().for_each(|e| {
@@ -111,7 +111,7 @@ impl<T: Clone + Debug, const N: usize> From<&[T; N]> for DoublyLinkedList<T> {
 }
 impl<T> fmt::Display for DoublyLinkedList<T>
 where
-    T: Clone + fmt::Display + Debug,
+    T: fmt::Display + Debug,
 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let mut current = self.head.clone();
