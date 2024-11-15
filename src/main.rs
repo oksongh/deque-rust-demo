@@ -99,7 +99,7 @@ impl<T> Default for DoublyLinkedList<T> {
 }
 impl<T: Clone> From<&[T]> for DoublyLinkedList<T> {
     fn from(elms: &[T]) -> DoublyLinkedList<T> {
-        let mut list = DoublyLinkedList::new();
+        let mut list = Self::new();
         elms.iter().for_each(|e| {
             list.push_back(e.clone());
         });
@@ -108,11 +108,7 @@ impl<T: Clone> From<&[T]> for DoublyLinkedList<T> {
 }
 impl<T: Clone, const N: usize> From<&[T; N]> for DoublyLinkedList<T> {
     fn from(elms: &[T; N]) -> DoublyLinkedList<T> {
-        let mut list = DoublyLinkedList::new();
-        elms.iter().for_each(|e| {
-            list.push_back(e.clone());
-        });
-        list
+        Self::from(&elms[..])
     }
 }
 impl<T> fmt::Display for DoublyLinkedList<T>
