@@ -5,7 +5,7 @@ use std::{
 };
 
 #[derive(Debug)]
-struct Node<T> {
+pub struct Node<T> {
     data: T,
     next: Option<Rc<RefCell<Node<T>>>>,
     prev: Option<Rc<RefCell<Node<T>>>>,
@@ -89,6 +89,41 @@ impl<T> DoublyLinkedList<T> {
             }
         }
         self.head = Some(Rc::clone(&new_node));
+    }
+}
+
+impl<T: Debug + Clone> DoublyLinkedList<T> {
+    pub fn read(&self, index: usize) -> Option<Rc<RefCell<Node<T>>>> {
+        let mut cur = self.head.clone();
+        let mut cnt = 0;
+        loop {
+            // println!("{cnt}");
+            // if cnt == 4 {
+            //     break;
+            // }
+            match cur {
+                Some(_cur) if cnt < index => {
+                    cur = _cur.borrow().next.clone();
+                    cnt += 1;
+                    println!("{:?}", _cur.borrow().data);
+                }
+                // Some(_cur) => return Some(&(_cur.borrow().data)),
+                // None => return None,
+                _ => break,
+            }
+        }
+
+        // let cur = cur;
+        cur.map(|cur| Rc::clone(&cur))
+    }
+    pub fn print_string_count(&self) {
+        println!("string count");
+
+        let mut cur = self.head.clone();
+        while let Some(c) = cur {
+            cur = c.borrow().next.clone();
+            println!("{}", Rc::strong_count(&c));
+        }
     }
 }
 

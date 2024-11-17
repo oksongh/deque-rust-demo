@@ -1,4 +1,4 @@
-use std::vec;
+use std::rc::Rc;
 
 use doublylinkedlist::DoublyLinkedList;
 fn main() {
@@ -19,4 +19,13 @@ fn main() {
         list.pop_front().unwrap(),
         list.pop_back().unwrap()
     );
+    leak();
+}
+fn leak() {
+    let list = DoublyLinkedList::from(&[1, 2, 3, 4]);
+    let third = list.read(3).unwrap();
+
+    list.print_string_count();
+    drop(list);
+    println!("after drop:{}", Rc::strong_count(&third));
 }
