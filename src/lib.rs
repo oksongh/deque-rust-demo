@@ -90,6 +90,18 @@ impl<T> DoublyLinkedList<T> {
         }
         self.head = Some(Rc::clone(&new_node));
     }
+
+    pub fn peek_front(&self) -> Option<Ref<T>> {
+        // let a =
+        self.head
+            .as_ref()
+            .map(|node| Ref::map(node.borrow(), |node| &node.data))
+    }
+    pub fn peek_back(&self) -> Option<Ref<T>> {
+        self.tail
+            .as_ref()
+            .map(|node| Ref::map(node.borrow(), |node| &node.data))
+    }
 }
 
 impl<T: Debug + Clone> DoublyLinkedList<T> {
@@ -239,4 +251,19 @@ mod tests {
         }
         assert_eq!(list.pop_front(), None);
     }
+    #[test]
+    fn peek_back() {
+        assert!(DoublyLinkedList::<i32>::new().peek_back().is_none());
+
+        let list = DoublyLinkedList::from(&[1, 2, 3, 4, 5]);
+        assert_eq!(*list.peek_back().unwrap(), 5);
+    }
+    #[test]
+    fn peek_front() {
+        assert!(DoublyLinkedList::<i32>::new().peek_front().is_none());
+
+        let list = DoublyLinkedList::from(&[1, 2, 3, 4, 5]);
+        assert_eq!(*list.peek_front().unwrap(), 1);
+    }
+
 }
