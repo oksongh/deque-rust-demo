@@ -1,5 +1,5 @@
 use std::{
-    cell::RefCell,
+    cell::{Ref, RefCell},
     fmt::{self, Debug},
     rc::Rc,
 };
@@ -10,6 +10,7 @@ pub struct Node<T> {
     next: Option<Rc<RefCell<Node<T>>>>,
     prev: Option<Rc<RefCell<Node<T>>>>,
 }
+#[derive(Debug)]
 pub struct DoublyLinkedList<T> {
     head: Option<Rc<RefCell<Node<T>>>>,
     tail: Option<Rc<RefCell<Node<T>>>>,
@@ -109,10 +110,6 @@ impl<T: Debug + Clone> DoublyLinkedList<T> {
         let mut cur = self.head.clone();
         let mut cnt = 0;
         loop {
-            // println!("{cnt}");
-            // if cnt == 4 {
-            //     break;
-            // }
             match cur {
                 Some(_cur) if cnt < index => {
                     cur = _cur.borrow().next.clone();
@@ -128,6 +125,7 @@ impl<T: Debug + Clone> DoublyLinkedList<T> {
         // let cur = cur;
         cur.map(|cur| Rc::clone(&cur))
     }
+
     pub fn print_string_count(&self) {
         println!("string count");
 
@@ -139,7 +137,20 @@ impl<T: Debug + Clone> DoublyLinkedList<T> {
     }
 }
 
-impl<T> Default for DoublyLinkedList<T> {
+impl<T> Drop for DoublyLinkedList<T> {
+    fn drop(&mut self) {
+        self.tail = None;
+        let mut cur = self.head.take();
+        while let Some(cur_) = cur {
+            cur_.borrow_mut().prev = None;
+            cur = cur_.borrow_mut().next.take();
+        }
+
+        // while self.pop_front().is_some() {}
+    }
+}
+
+impl<T: Debug> Default for DoublyLinkedList<T> {
     fn default() -> Self {
         Self::new()
     }
@@ -276,4 +287,31 @@ mod tests {
         assert_eq!(*list.peek_front().unwrap(), 1);
     }
 
+    #[test]
+    fn leak() {
+        let list = DoublyLinkedList::from(&[1, 2, 3, 4]);
+        let third = list.read(3).unwrap();
+
+        list.print_string_count();
+        drop(list);
+
+        assert_eq!(Rc::strong_count(&third), 1);
+        // assert_eq!(Rc::strong_count(third.borrow().next),)
+    }
+    #[test]
+    fn free() {
+        struct Mock(i32);
+        impl Drop for Mock {
+            fn drop(&mut self) {
+                println!("drop:{}", self.0);
+            }
+        }
+
+        let mock = [1, 2, 3, 4].map(Mock);
+
+        let list = DoublyLinkedList::from(mock);
+        println!("start drop");
+        drop(list);
+        println!("end drop");
+    }
 }
