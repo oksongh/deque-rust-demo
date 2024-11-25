@@ -158,6 +158,16 @@ impl<T: Clone, const N: usize> From<&[T; N]> for DoublyLinkedList<T> {
         Self::from(&elms[..])
     }
 }
+impl<T, const N: usize> From<[T; N]> for DoublyLinkedList<T> {
+    fn from(elms: [T; N]) -> Self {
+        let mut list = Self::new();
+        elms.into_iter().for_each(|e| {
+            list.push_back(e);
+        });
+        list
+    }
+}
+
 impl<T> fmt::Display for DoublyLinkedList<T>
 where
     T: fmt::Display + Debug,
